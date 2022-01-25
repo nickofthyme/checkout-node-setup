@@ -166,17 +166,14 @@ runs:
     #   with:
     #     script: core.notice(process.env)
     - name: Print inputs 0
-      shell: python
-      run: |
-        print(${{ inputs.skip-checkout }})
+      shell: sh
+      run: echo "1 - ${{ inputs.skip-checkout }}"
     - name: Print inputs 1
-      shell: python
-      run: |
-        print(${{ toJSON(inputs.skip-checkout) }})
+      shell: sh
+      run: echo "2 - ${{ toJSON(inputs.skip-checkout) }}"
     - name: Print inputs 2
       shell: python
-      run: |
-        print(${{ fromJSON(inputs).skip-checkout }})
+      run: echo "3 - ${{ fromJSON(inputs).skip-checkout }}"
     - name: Checkout
       uses: actions/checkout@v2
       # if: ${{ !inputs.skip-checkout }}
