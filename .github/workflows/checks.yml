@@ -63,11 +63,11 @@ jobs:
           skip-setup-node: false
           skip-npm-install: true
       - name: Get env node version
-        id: node-version-env
+        id: node-version
         run: |
           echo "::set-output name=value::$(node --version)"
-      - name: Check node version env
-        if: ${{ steps.node-version-before.outputs.value != 'v16.0.0' }}
+      - name: Check node version
+        if: ${{ steps.node-version.outputs.value != 'v16.0.0' }}
         uses: actions/github-script@v3
         with:
           script: |
