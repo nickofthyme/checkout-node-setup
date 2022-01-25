@@ -6,6 +6,7 @@ concurrency:
 
 env:
   NODE_VERSION: '14.0.0'
+  APP_DIR: 'checkout-node-setup'
 
 on:
   pull_request:
@@ -14,47 +15,94 @@ on:
       - 'main'
 
 jobs:
-  tests:
-    name: Tests
+  test-checkout:
+    name: Checkout
     runs-on: ubuntu-latest
     steps:
-      # Install local action
+      #################  Install local action  #################
       - name: Check out repository
         uses: actions/checkout@v2
-      - name: Install local action packages
-        uses: ./ # this action
+        with:
+          path: ${{ env.APP_DIR }}
+      ##########################################################
+
+      - name: Run local action
+        uses: ./${{ env.APP_DIR }}
         with:
           path: 'put_repo_here'
+      - name: Check repo directory
+        run: |
+          directory="${{ github.workspace }}/put_repo_here"
 
-      # - name: Install local action packages
-      #   uses: ./ # this action
-      #   with:
-      #     node-version: '16.0.0'
-      #     skip-checkout: true
-      #     skip-setup-node: false
-      #     skip-npm-install: true
-      # - name: Get env node version
-      #   id: node-version-env
-      #   run: echo "::set-output name=value::$(node --version)"
-      # - name: Check node version env
-      #   if: ${{ steps.node-version-before.outputs.value != '16.0.0' }}
-      #   uses: actions/github-script@v3
-      #   with:
-      #     script: core.setFailed('Node version should match set version')
+          # bash check if directory exists
+          if [ ! -d $directory ]; then
+            echo "Failed to install repo at path"
+            exit 1
+          fi
 
-      # - name: Install local action packages
-      #   uses: ./ # this action
-      #   with:
-      #     path: 'put_repo_here'
-      #     skip-checkout: false
-      #     skip-setup-node: true
-      #     skip-npm-install: true
-      # - name: Check repo directory
-      #   run: |
-      #     directory="${{ github.workspace }}/put_repo_here"
+  setup-node:
+    name: Setup node
+    runs-on: ubuntu-latest
+    steps:
+      #################  Install local action  #################
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.APP_DIR }}
+      ##########################################################
 
-      #     # bash check if directory exists
-      #     if [ ! -d $directory ]; then
-      #       echo "Failed to install repo at path"
-      #       exit 1
-      #     fi
+      - name: Run local action
+        uses: ./${{ env.APP_DIR }}
+        with:
+          node-version: '16.0.0'
+          skip-checkout: true
+          skip-setup-node: false
+          skip-npm-install: true
+      - name: Get env node version
+        id: node-version-env
+        run: echo "::set-output name=value::$(node --version)"
+      - name: Check node version env
+        if: ${{ steps.node-version-before.outputs.value != '16.0.0' }}
+        uses: actions/github-script@v3
+        with:
+          script: core.setFailed('Node version should match set version')
+
+
+  npm-install:
+    name: NPM install
+    runs-on: ubuntu-latest
+    steps:
+      #################  Install local action  #################
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.APP_DIR }}
+      ##########################################################
+
+      - name: Create sample package-lock.json
+        shell: sh
+        run: |
+          cat <<EOF >> package.json
+          {
+            "name": "my-awesome-package",
+            "version": "1.0.0",
+            "dependencies": {
+              "preact": "^10.0.0"
+            }
+          }
+          EOF
+      - name: Run local action
+        uses: ./${{ env.APP_DIR }}
+        with:
+          skip-checkout: true
+          skip-setup-node: false
+          skip-npm-install: false
+      - name: Check node_modules directory
+        run: |
+          directory="${{ github.workspace }}/node_modules"
+
+          if [ ! -d $directory ]; then
+            echo "Failed to install node_modules"
+            exit 1
+          fi
+
