@@ -38,6 +38,10 @@ Defaults to `false` instead of `true`
 
 Defaults to `env.NODE_VERSION` instead of `undefined`
 
+### Removes deprecated `version` from `actions/setup-node`
+
+This property is removed to prevent warnings in action runs. Use `node-version` instead.
+
 ### `useRollingCache` from `bahmutov/npm-install`
 
 Defaults to `true` instead of `false`
