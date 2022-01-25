@@ -25,6 +25,8 @@ jobs:
           path: checkout-node-setup
       ##########################################################
 
+      - name: Test ls
+        run: ls
       - name: Run local action
         uses: ./checkout-node-setup
         with:
