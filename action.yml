@@ -170,13 +170,13 @@ runs:
       run: echo "${{ inputs.skip-checkout }}"
     - name: Print bollean - 1
       shell: sh
-      run: echo "1 - ${{ fronJSON(inputs.skip-checkout) == false }}"
+      run: echo "1 - ${{ fromJSON(inputs.skip-checkout) == false }}"
     - name: Print bollean - 2
       shell: sh
-      run: echo "2 - ${{ fronJSON(inputs.skip-checkout) == 'false' }}"
+      run: echo "2 - ${{ fromJSON(inputs.skip-checkout) == 'false' }}"
     - name: Print bollean - 3
       shell: sh
-      run: echo "3 - ${{ !fronJSON(inputs.skip-checkout) }}"
+      run: echo "3 - ${{ !fromJSON(inputs.skip-checkout) }}"
 
 
     - name: Print inputs 2
