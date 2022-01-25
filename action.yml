@@ -109,7 +109,6 @@ inputs:
     required: false
   node-version:
     description: 'Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0'
-    default: ${{ env.NODE_VERSION }}
     required: false
   node-version-file:
     description: 'File containing the version Spec of the version to use.  Examples: .nvmrc, .node-version'
@@ -179,7 +178,7 @@ runs:
       if: ${{ !inputs.skip-setup-node }}
       with:
         token: ${{ inputs.setup-node-token }}
-        node-version: ${{ inputs.node-version }}
+        node-version: ${{ inputs.node-version || env.NODE_VERSION }}
         always-auth: ${{ inputs.always-auth }}
         node-version-file: ${{ inputs.node-version-file }}
         architecture: ${{ inputs.architecture }}
