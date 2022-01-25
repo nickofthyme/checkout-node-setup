@@ -1,3 +1,5 @@
+[![Checks](https://github.com/nickofthyme/checkout-node-setup/actions/workflows/checks.yml/badge.svg)](https://github.com/nickofthyme/checkout-node-setup/actions/workflows/checks.yml)
+
 # Checkout node setup
 
 This action combines [`actions/checkout`](https://github.com/actions/checkout), [`actions/setup-node`](https://github.com/bahmutov/npm-install) and [`bahmutov/npm-install`](https://github.com/bahmutov/npm-install) into a single action.
