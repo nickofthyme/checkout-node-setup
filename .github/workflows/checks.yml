@@ -25,7 +25,7 @@ jobs:
       - name: Install local action packages
         uses: ./ # this action
         with:
-          node-verion: '16.0.0'
+          node-version: '16.0.0'
           skip-checkout: true
           skip-setup-node: false
           skip-npm-install: true
