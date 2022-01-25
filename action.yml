@@ -173,7 +173,7 @@ runs:
       run: echo "1 - ${{ inputs.skip-checkout == false }}"
     - name: Print bollean - 2
       shell: sh
-      run: echo "2 - ${{ inputs.skip-checkout == "false" }}"
+      run: echo "2 - ${{ inputs.skip-checkout == 'false' }}"
     - name: Print bollean - 3
       shell: sh
       run: echo "3 - ${{ !inputs.skip-checkout }}"
