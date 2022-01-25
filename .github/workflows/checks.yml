@@ -6,7 +6,6 @@ concurrency:
 
 env:
   NODE_VERSION: '14.0.0'
-  APP_DIR: 'checkout-node-setup'
 
 on:
   pull_request:
@@ -23,11 +22,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
         with:
-          path: ${{ env.APP_DIR }}
+          path: checkout-node-setup
       ##########################################################
 
       - name: Run local action
-        uses: ./${{ env.APP_DIR }}
+        uses: ./checkout-node-setup
         with:
           path: 'put_repo_here'
       - name: Check repo directory
@@ -48,11 +47,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
         with:
-          path: ${{ env.APP_DIR }}
+          path: checkout-node-setup
       ##########################################################
 
       - name: Run local action
-        uses: ./${{ env.APP_DIR }}
+        uses: ./checkout-node-setup
         with:
           node-version: '16.0.0'
           skip-checkout: true
@@ -76,7 +75,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
         with:
-          path: ${{ env.APP_DIR }}
+          path: checkout-node-setup
       ##########################################################
 
       - name: Create sample package-lock.json
@@ -92,7 +91,7 @@ jobs:
           }
           EOF
       - name: Run local action
-        uses: ./${{ env.APP_DIR }}
+        uses: ./checkout-node-setup
         with:
           skip-checkout: true
           skip-setup-node: false
