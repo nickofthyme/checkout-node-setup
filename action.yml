@@ -157,17 +157,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: View context
-      uses: actions/github-script@v5
-      with:
-        script: core.notice(context)
-    - name: View process.env
-      uses: actions/github-script@v5
-      with:
-        script: core.notice(process.env)
     - name: Checkout
       uses: actions/checkout@v2
-      if: ${{ !inputs.skip-checkout }}
+      if: ${{ !fromJSON(inputs.skip-checkout) }}
       with:
         token: ${{ inputs.checkout-token }}
         repository: ${{ inputs.repository }}
@@ -183,7 +175,7 @@ runs:
         submodules: ${{ inputs.submodules }}
     - name: Setup node
       uses: actions/setup-node@v2
-      if: ${{ !inputs.skip-setup-node }}
+      if: ${{ !fromJSON(inputs.skip-setup-node) }}
       with:
         token: ${{ inputs.setup-node-token }}
         node-version: ${{ inputs.node-version || env.NODE_VERSION }}
@@ -198,7 +190,7 @@ runs:
         version: ${{ inputs.version }}
     - name: Install node_modules
       uses: bahmutov/npm-install@v1
-      if: ${{ !inputs.skip-npm-install }}
+      if: ${{ !fromJSON(inputs.skip-npm-install) }}
       with:
         working-directory: ${{ inputs.working-directory }}
         useLockFile: ${{ inputs.useLockFile }}

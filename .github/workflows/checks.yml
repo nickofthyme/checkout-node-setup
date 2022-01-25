@@ -1,0 +1,117 @@
+name: Checks
+
+concurrency:
+  group: '${{ github.workflow }} - ${{ github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '14.0.0'
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  test-checkout:
+    name: Checkout
+    runs-on: ubuntu-latest
+    steps:
+      #################  Install local action  #################
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          path: checkout-node-setup
+      ##########################################################
+
+      - name: Test ls
+        run: ls
+      - name: Run local action
+        uses: ./checkout-node-setup
+        with:
+          path: 'put_repo_here'
+          skip-checkout: false
+          skip-setup-node: true
+          skip-npm-install: true
+      - name: Check repo directory
+        run: |
+          directory="${{ github.workspace }}/put_repo_here"
+
+          # bash check if directory exists
+          if [ ! -d $directory ]; then
+            echo "Failed to install repo at path"
+            exit 1
+          fi
+
+  setup-node:
+    name: Setup node
+    runs-on: ubuntu-latest
+    steps:
+      #################  Install local action  #################
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          path: checkout-node-setup
+      ##########################################################
+
+      - name: Run local action
+        uses: ./checkout-node-setup
+        with:
+          node-version: '16.0.0'
+          skip-checkout: true
+          skip-setup-node: false
+          skip-npm-install: true
+      - name: Get env node version
+        id: node-version
+        run: |
+          echo "::set-output name=value::$(node --version)"
+      - name: Check node version
+        if: ${{ steps.node-version.outputs.value != 'v16.0.0' }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+            core.setFailed('Wrong node version. Expected "v16.0.0" got "${{ steps.node-version-before.outputs.value }}"')
+
+
+  npm-install:
+    name: NPM install
+    runs-on: ubuntu-latest
+    steps:
+      #################  Install local action  #################
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          path: checkout-node-setup
+      ##########################################################
+
+      - name: Create sample package-lock.json
+        shell: sh
+        run: |
+          cat <<EOF >> package.json
+          {
+            "name": "my-awesome-package",
+            "version": "1.0.0",
+            "dependencies": {
+              "preact": "^10.0.0"
+            }
+          }
+          EOF
+      - run: pwd
+      - run: ls
+      - name: Run local action
+        uses: ./checkout-node-setup
+        with:
+          useLockFile: false
+          skip-checkout: true
+          skip-setup-node: false
+          skip-npm-install: false
+      - name: Check node_modules directory
+        run: |
+          directory="${{ github.workspace }}/node_modules"
+
+          if [ ! -d $directory ]; then
+            echo "Failed to install node_modules"
+            exit 1
+          fi
+
