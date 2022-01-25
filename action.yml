@@ -165,12 +165,20 @@ runs:
     #   uses: actions/github-script@v5
     #   with:
     #     script: core.notice(process.env)
-    - name: Print inputs 0
+    - name: Print skip-checkout
       shell: sh
-      run: echo "1 - ${{ inputs.skip-checkout }}"
-    - name: Print inputs 1
+      run: echo "${{ inputs.skip-checkout }}"
+    - name: Print bollean - 1
       shell: sh
-      run: echo "2 - ${{ toJSON(inputs.skip-checkout) }}"
+      run: echo "1 - ${{ inputs.skip-checkout == false }}"
+    - name: Print bollean - 2
+      shell: sh
+      run: echo "2 - ${{ inputs.skip-checkout == "false" }}"
+    - name: Print bollean - 3
+      shell: sh
+      run: echo "3 - ${{ !inputs.skip-checkout }}"
+
+
     - name: Print inputs 2
       shell: python
       run: echo "3 - ${{ fromJSON(inputs).skip-checkout }}"
