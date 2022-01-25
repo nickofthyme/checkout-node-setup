@@ -31,6 +31,9 @@ jobs:
         uses: ./checkout-node-setup
         with:
           path: 'put_repo_here'
+          skip-checkout: false
+          skip-setup-node: true
+          skip-npm-install: true
       - name: Check repo directory
         run: |
           directory="${{ github.workspace }}/put_repo_here"
@@ -61,7 +64,9 @@ jobs:
           skip-npm-install: true
       - name: Get env node version
         id: node-version-env
-        run: echo "::set-output name=value::$(node --version)"
+        run: |
+          echo "Node version $(node --version)"
+          echo "::set-output name=value::$(node --version)"
       - name: Check node version env
         if: ${{ steps.node-version-before.outputs.value != '16.0.0' }}
         uses: actions/github-script@v3
@@ -92,6 +97,8 @@ jobs:
             }
           }
           EOF
+      - run: pwd
+      - run: ls
       - name: Run local action
         uses: ./checkout-node-setup
         with:
