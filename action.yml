@@ -1,0 +1,199 @@
+name: 'Checkout node setup'
+description: 'Checkout, setup and install node with dependencies'
+author: Nick Partridge <nick.ryan.partridge@gmail.com>
+branding:
+  icon: 'triangle'
+  color: 'gray-dark'
+inputs:
+  skip-checkout:
+    description: Skip checkout step
+    default: 'false'
+    required: false
+  skip-setup-node:
+    description: Skip node setup step
+    default: 'false'
+    required: false
+  skip-npm-install:
+    description: Skip npm install step
+    default: 'false'
+    required: false
+
+  ###############################################################
+  ###################### Input overrides ########################
+  ###############################################################
+  checkout-token:
+    description: >
+      Personal access token (PAT) used to fetch the repository. The PAT is configured
+      with the local git config, which enables your scripts to run authenticated git
+      commands. The post-job step removes the PAT.
+      We recommend using a service account with the least permissions necessary.
+      Also when generating a new PAT, select the least scopes necessary.
+      [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+    default: ${{ github.token }}
+    required: false
+
+  setup-node-token:
+    description: Used to pull node distributions from node-versions.  Since there's a default, this is typically not supplied by the user.
+    default: ${{ github.token }}
+    required: false
+
+  ###############################################################
+  ############### Inputs from actions/checkout@v2 ###############
+  ###############################################################
+  repository:
+    description: 'Repository name with owner. For example, actions/checkout'
+    default: ${{ github.repository }}
+    required: false
+  ref:
+    description: >
+      The branch, tag or SHA to checkout. When checking out the repository that
+      triggered a workflow, this defaults to the reference or SHA for that
+      event.  Otherwise, uses the default branch.
+    required: false
+  ssh-key:
+    description: >
+      SSH key used to fetch the repository. The SSH key is configured with the local
+      git config, which enables your scripts to run authenticated git commands.
+      The post-job step removes the SSH key.
+      We recommend using a service account with the least permissions necessary.
+      [Learn more about creating and using
+      encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+    required: false
+  ssh-known-hosts:
+    description: >
+      Known hosts in addition to the user and global host key database. The public
+      SSH keys for a host may be obtained using the utility `ssh-keyscan`. For example,
+      `ssh-keyscan github.com`. The public key for github.com is always implicitly added.
+    required: false
+  ssh-strict:
+    description: >
+      Whether to perform strict host key checking. When true, adds the options `StrictHostKeyChecking=yes`
+      and `CheckHostIP=no` to the SSH command line. Use the input `ssh-known-hosts` to
+      configure additional hosts.
+    default: 'true'
+    required: false
+  persist-credentials:
+    description: 'Whether to configure the token or SSH key with the local git config'
+    default: 'false' # override from true
+    required: false
+  path:
+    description: 'Relative path under $GITHUB_WORKSPACE to place the repository'
+    required: false
+  clean:
+    description: 'Whether to execute `git clean -ffdx && git reset --hard HEAD` before fetching'
+    default: 'true'
+    required: false
+  fetch-depth:
+    description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+    default: '1'
+    required: false
+  lfs:
+    description: 'Whether to download Git-LFS files'
+    default: 'false'
+    required: false
+  submodules:
+    description: >
+      Whether to checkout submodules: `true` to checkout submodules or `recursive` to
+      recursively checkout submodules.
+      When the `ssh-key` input is not provided, SSH URLs beginning with `git@github.com:` are
+      converted to HTTPS.
+    default: 'false'
+    required: false
+
+  ###############################################################
+  ############# Inputs from actions/setup-node@v2 ###############
+  ###############################################################
+  always-auth:
+    description: 'Set always-auth in npmrc'
+    default: 'false'
+    required: false
+  node-version:
+    description: 'Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0'
+    default: ${{ env.NODE_VERSION }}
+    required: false
+  node-version-file:
+    description: 'File containing the version Spec of the version to use.  Examples: .nvmrc, .node-version'
+    required: false
+  architecture:
+    description: 'Target architecture for Node to use. Examples: x86, x64. Will use system architecture by default.'
+    required: false
+  check-latest:
+    description: 'Set this option if you want the action to check for the latest available version that satisfies the version spec'
+    default: 'false'
+    required: false
+  registry-url:
+    description: 'Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN'
+    required: false
+  scope:
+    description: 'Optional scope for authenticating against scoped registries'
+    required: false
+  cache:
+    description: 'Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm'
+    required: false
+  cache-dependency-path:
+    description: 'Used to specify the path to a dependency file: package-lock.json, yarn.lock, etc. Supports wildcards or a list of file names for caching multiple dependencies.'
+    required: false
+  version:
+    description: 'Deprecated. Use node-version instead. Will not be supported after October 1, 2019'
+    deprecationMessage: 'The version property will not be supported after October 1, 2019. Use node-version instead'
+    required: false
+
+  ###############################################################
+  ############ Inputs from bahmutov/npm-install@v1 ##############
+  ###############################################################
+  working-directory:
+    description: 'Working directory to specify subfolder in which dependencies are defined'
+    required: false
+  useLockFile:
+    description: 'Option to enable or disable use of a lock file (package-lock.json/yarn.lock)'
+    required: false
+  useRollingCache:
+    description: Option to enable restoring a cache that doesn't exactly match the lockfile, and expire once a month to keep it from only growing larger
+    default: 'true' # override from true
+    required: false
+  install-command:
+    description: 'Custom install command to use'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      if: ${{ !inputs.skip-checkout }}
+      with:
+        token: ${{ inputs.checkout-token }}
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+        ssh-key: ${{ inputs.ssh-key }}
+        ssh-known-hosts: ${{ inputs.ssh-known-hosts }}
+        ssh-strict: ${{ inputs.ssh-strict }}
+        persist-credentials: ${{ inputs.persist-credentials }}
+        path: ${{ inputs.path }}
+        clean: ${{ inputs.clean }}
+        fetch-depth: ${{ inputs.fetch-depth }}
+        lfs: ${{ inputs.lfs }}
+        submodules: ${{ inputs.submodules }}
+    - name: Setup node
+      uses: actions/setup-node@v2
+      if: ${{ !inputs.skip-setup-node }}
+      with:
+        token: ${{ inputs.setup-node-token }}
+        node-version: ${{ inputs.node-version }}
+        always-auth: ${{ inputs.always-auth }}
+        node-version-file: ${{ inputs.node-version-file }}
+        architecture: ${{ inputs.architecture }}
+        check-latest: ${{ inputs.check-latest }}
+        registry-url: ${{ inputs.registry-url }}
+        scope: ${{ inputs.scope }}
+        cache: ${{ inputs.cache }}
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}
+        version: ${{ inputs.version }}
+    - name: Install node_modules
+      uses: bahmutov/npm-install@v1
+      if: ${{ !inputs.skip-npm-install }}
+      with:
+        working-directory: ${{ inputs.working-directory }}
+        useLockFile: ${{ inputs.useLockFile }}
+        useRollingCache: ${{ inputs.useRollingCache }}
+        install-command: ${{ inputs.install-command }}
