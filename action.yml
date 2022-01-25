@@ -183,7 +183,6 @@ runs:
         scope: ${{ inputs.scope }}
         cache: ${{ inputs.cache }}
         cache-dependency-path: ${{ inputs.cache-dependency-path }}
-        version: ${{ inputs.version }}
     - name: Install node_modules
       uses: bahmutov/npm-install@v1
       if: ${{ !fromJSON(inputs.skip-npm-install) }}
