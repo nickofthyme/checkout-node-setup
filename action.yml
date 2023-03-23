@@ -154,7 +154,7 @@ runs:
   using: "composite"
   steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       if: ${{ !fromJSON(inputs.skip-checkout) }}
       with:
         token: ${{ inputs.checkout-token }}
@@ -170,7 +170,7 @@ runs:
         lfs: ${{ inputs.lfs }}
         submodules: ${{ inputs.submodules }}
     - name: Setup node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       if: ${{ !fromJSON(inputs.skip-setup-node) }}
       with:
         token: ${{ inputs.setup-node-token }}
